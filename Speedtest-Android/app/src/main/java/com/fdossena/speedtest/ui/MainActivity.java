@@ -2,11 +2,13 @@ package com.fdossena.speedtest.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,7 +37,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import favosoft.speedtest.R;
@@ -44,40 +48,41 @@ public class MainActivity extends Activity {
 
     private SharedPreferences prefs;
     private static String SERVER_PREF_KEY = "server";
+    private static String HIRTORY_PREF_KEY = "history";
+
     private static String SERVER_ADDR = "http://192.168.1.4:8866";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //transition(R.id.page_splash,0);
         new Thread(){
             public void run(){
-                //try{sleep(1500);}catch (Throwable t){}
-                try {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    final ImageView v = (ImageView) findViewById(R.id.testBackground);
-                    options.inJustDecodeBounds = true;
-                    BitmapFactory.decodeResource(getResources(), R.drawable.testbackground, options);
-                    int ih = options.outHeight, iw = options.outWidth;
-                    if(4*ih*iw>16*1024*1024) throw new Exception("Too big");
-                    options.inJustDecodeBounds = false;
-                    DisplayMetrics displayMetrics = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                    int vh = displayMetrics.heightPixels, vw = displayMetrics.widthPixels;
-                    double desired=Math.max(vw,vh) * 0.7;
-                    double scale=desired/Math.max(iw,ih);
-                    final Bitmap b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.testbackground, options),(int)(iw*scale), (int)(ih*scale), true);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            v.setImageBitmap(b);
-                        }
-                    });
-                }catch (Throwable t){
-                    System.err.println("Failed to load testbackground ("+t.getMessage()+")");
-                }
+//                try{sleep(1500);}catch (Throwable t){}
+//                try {
+//                    BitmapFactory.Options options = new BitmapFactory.Options();
+//                    final ImageView v = (ImageView) findViewById(R.id.testBackground);
+//                    options.inJustDecodeBounds = true;
+//                    BitmapFactory.decodeResource(getResources(), R.drawable.testbackground, options);
+//                    int ih = options.outHeight, iw = options.outWidth;
+//                    if(4*ih*iw>16*1024*1024) throw new Exception("Too big");
+//                    options.inJustDecodeBounds = false;
+//                    DisplayMetrics displayMetrics = new DisplayMetrics();
+//                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//                    int vh = displayMetrics.heightPixels, vw = displayMetrics.widthPixels;
+//                    double desired=Math.max(vw,vh) * 0.7;
+//                    double scale=desired/Math.max(iw,ih);
+//                    final Bitmap b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.testbackground, options),(int)(iw*scale), (int)(ih*scale), true);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            v.setImageBitmap(b);
+//                        }
+//                    });
+//                }catch (Throwable t){
+//                    System.err.println("Failed to load testbackground ("+t.getMessage()+")");
+//                }
                 page_init();
             }
         }.start();
@@ -168,6 +173,7 @@ public class MainActivity extends Activity {
 
                 if (servers.length == 1) {
                     servers[0].setPing(0);
+                    prefs = getPreferences(Context.MODE_PRIVATE);
                     SERVER_ADDR = prefs.getString(SERVER_PREF_KEY, SERVER_ADDR);
                     servers[0].setServer(SERVER_ADDR);
                     st.setSelectedServer(servers[0]);
@@ -178,93 +184,93 @@ public class MainActivity extends Activity {
                         }
                     });
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            transition(R.id.page_init,TRANSITION_LENGTH);
-                            final TextView t=((TextView)findViewById(R.id.init_text));
-                            t.setText(R.string.init_init);
-                            t.setText(R.string.init_selecting);
-                        }
-                    });
-                    st.selectServer(new Speedtest.ServerSelectedHandler() {
-                        @Override
-                        public void onServerSelected(final TestPoint server) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (server == null) {
-                                        transition(R.id.page_fail, TRANSITION_LENGTH);
-                                        ((TextView) findViewById(R.id.fail_text)).setText(getString(R.string.initFail_noServers));
-                                        final Button b = (Button) findViewById(R.id.fail_button);
-                                        b.setText(R.string.initFail_retry);
-                                        b.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                page_init();
-                                                b.setOnClickListener(null);
-                                            }
-                                        });
-                                    } else {
-                                        page_serverSelect(server, st.getTestPoints());
-                                    }
-                                }
-                            });
-                        }
-                    });
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            transition(R.id.page_init,TRANSITION_LENGTH);
+//                            final TextView t=((TextView)findViewById(R.id.init_text));
+//                            t.setText(R.string.init_init);
+//                            t.setText(R.string.init_selecting);
+//                        }
+//                    });
+//                    st.selectServer(new Speedtest.ServerSelectedHandler() {
+//                        @Override
+//                        public void onServerSelected(final TestPoint server) {
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if (server == null) {
+//                                        transition(R.id.page_fail, TRANSITION_LENGTH);
+//                                        ((TextView) findViewById(R.id.fail_text)).setText(getString(R.string.initFail_noServers));
+//                                        final Button b = (Button) findViewById(R.id.fail_button);
+//                                        b.setText(R.string.initFail_retry);
+//                                        b.setOnClickListener(new View.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(View v) {
+//                                                page_init();
+//                                                b.setOnClickListener(null);
+//                                            }
+//                                        });
+//                                    } else {
+//                                        page_serverSelect(server, st.getTestPoints());
+//                                    }
+//                                }
+//                            });
+//                        }
+//                    });
                 }
             }
         }.start();
     }
 
-    private void page_serverSelect(TestPoint selected, TestPoint[] servers){
-        transition(R.id.page_serverSelect,TRANSITION_LENGTH);
-        reinitOnResume=true;
-        final ArrayList<TestPoint> availableServers=new ArrayList<>();
-        for(TestPoint t:servers) {
-            if (t.getPing() != -1) availableServers.add(t);
-        }
-        int selectedId=availableServers.indexOf(selected);
-        final Spinner spinner=(Spinner)findViewById(R.id.serverList);
-        ArrayList<String> options=new ArrayList<String>();
-        for(TestPoint t:availableServers){
-            options.add(t.getName());
-        }
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,options.toArray(new String[0]));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(selectedId);
-        final Button b=(Button)findViewById(R.id.start);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reinitOnResume=false;
-                page_test(availableServers.get(spinner.getSelectedItemPosition()));
-                b.setOnClickListener(null);
-            }
-        });
-        TextView t=(TextView)findViewById(R.id.privacy_open);
-        t.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                page_privacy();
-            }
-        });
-    }
+//    private void page_serverSelect(TestPoint selected, TestPoint[] servers){
+//        transition(R.id.page_serverSelect,TRANSITION_LENGTH);
+//        reinitOnResume=true;
+//        final ArrayList<TestPoint> availableServers=new ArrayList<>();
+//        for(TestPoint t:servers) {
+//            if (t.getPing() != -1) availableServers.add(t);
+//        }
+//        int selectedId=availableServers.indexOf(selected);
+//        final Spinner spinner=(Spinner)findViewById(R.id.serverList);
+//        ArrayList<String> options=new ArrayList<String>();
+//        for(TestPoint t:availableServers){
+//            options.add(t.getName());
+//        }
+//        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,options.toArray(new String[0]));
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(adapter);
+//        spinner.setSelection(selectedId);
+//        final Button b=(Button)findViewById(R.id.start);
+//        b.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                reinitOnResume=false;
+//                page_test(availableServers.get(spinner.getSelectedItemPosition()));
+//                b.setOnClickListener(null);
+//            }
+//        });
+//        TextView t=(TextView)findViewById(R.id.privacy_open);
+//        t.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                page_privacy();
+//            }
+//        });
+//    }
 
-    private void page_privacy(){
-        transition(R.id.page_privacy,TRANSITION_LENGTH);
-        reinitOnResume=false;
-        ((WebView)findViewById(R.id.privacy_policy)).loadUrl(getString(R.string.privacy_policy));
-        TextView t=(TextView)findViewById(R.id.privacy_close);
-        t.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transition(R.id.page_serverSelect,TRANSITION_LENGTH);
-                reinitOnResume=true;
-            }
-        });
-    }
+//    private void page_privacy(){
+//        transition(R.id.page_privacy,TRANSITION_LENGTH);
+//        reinitOnResume=false;
+//        ((WebView)findViewById(R.id.privacy_policy)).loadUrl(getString(R.string.privacy_policy));
+//        TextView t=(TextView)findViewById(R.id.privacy_close);
+//        t.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                transition(R.id.page_serverSelect,TRANSITION_LENGTH);
+//                reinitOnResume=true;
+//            }
+//        });
+//    }
 
     private void page_test(final TestPoint selected){
         transition(R.id.page_test,TRANSITION_LENGTH);
@@ -295,11 +301,18 @@ public class MainActivity extends Activity {
         p.height=0;
         endTestArea.setLayoutParams(p);
         //findViewById(R.id.setting_button).setVisibility(View.GONE);
-        final Button setting_button=(Button)findViewById(R.id.setting_button2);
+        final Button setting_button=(Button)findViewById(R.id.setting_button);
         setting_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setTestServer();
+            }
+        });
+        final Button history_button=(Button)findViewById(R.id.history_button);
+        history_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHistoryResult();
             }
         });
         st.start(new Speedtest.SpeedtestHandler() {
@@ -357,14 +370,13 @@ public class MainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        final Button setting_button=(Button)findViewById(R.id.setting_button2);
-                        //setting_button.setVisibility(View.VISIBLE);
-                        setting_button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                setTestServer();
-                            }
-                        });
+//                        final Button setting_button=(Button)findViewById(R.id.setting_button);
+//                        setting_button.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                setTestServer();
+//                            }
+//                        });
                     }
                 });
             }
@@ -401,6 +413,8 @@ public class MainActivity extends Activity {
                         }
                     }
                 }.start();
+
+                saveTestResult();
             }
 
             @Override
@@ -468,15 +482,19 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try{st.abort();}catch (Throwable t){}
-    }
+        try{
+            st.abort();
+        } catch (Throwable t){
 
-    @Override
-    public void onBackPressed() {
-        if(currentPage==R.id.page_privacy)
-            transition(R.id.page_serverSelect,TRANSITION_LENGTH);
-        else super.onBackPressed();
+        }
     }
+//
+//    @Override
+//    public void onBackPressed() {
+//        if(currentPage==R.id.page_privacy)
+//            transition(R.id.page_serverSelect,TRANSITION_LENGTH);
+//        else super.onBackPressed();
+//    }
 
     //PAGE TRANSITION SYSTEM
 
@@ -558,7 +576,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 SERVER_ADDR = input.getText().toString();
-                prefs.edit().putString(SERVER_PREF_KEY, SERVER_ADDR);
+                SharedPreferences.Editor edit = prefs.edit();
+                edit.putString(SERVER_PREF_KEY, SERVER_ADDR);
+                edit.commit();
                 page_init();
             }
         });
@@ -570,5 +590,46 @@ public class MainActivity extends Activity {
         });
 
         builder.show();
+    }
+
+    private void saveTestResult() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+        String summary = currentDateandTime + "\n";
+        summary += "\t\tserver: " + st.getSelectedServer().getServerIp() + "\n";
+        summary += "\t\tping:   " + ((TextView)findViewById(R.id.pingText)).getText().toString() + " ms\n";
+        summary += "\t\tjitter:  " + ((TextView)findViewById(R.id.jitterText)).getText().toString() + " ms\n";
+        summary += "\t\tdown: " + ((TextView)findViewById(R.id.dlText)).getText().toString() + " Mbps\n";
+        summary += "\t\tup:    " + ((TextView)findViewById(R.id.ulText)).getText().toString() + " Mbps\n";
+        String history = prefs.getString(HIRTORY_PREF_KEY, "");
+        if (history.isEmpty()) {
+            history = summary;
+        } else {
+            history += "," + summary;
+        }
+
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString(HIRTORY_PREF_KEY, history);
+        edit.commit();
+    }
+
+    private void showHistoryResult() {
+        String history = "";
+        String[] results = prefs.getString(HIRTORY_PREF_KEY, "").split(",");
+        for (String result: results) {
+            history += result + "\n";
+        }
+
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        //alertDialog.setTitle("Result History");
+        alertDialog.setMessage(history);
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }

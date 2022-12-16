@@ -84,13 +84,6 @@
                 android:textSize="@dimen/speedMeasure"
                 android:visibility="gone"
                 />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/testFailArea"
-                android:layout_below="@id/ipInfo"
-                android:layout_marginTop="@dimen/margin_sep"
-                android:gravity="center">
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -102,18 +95,6 @@
                 android:textColor="@color/failButton_text"
                 android:textSize="@dimen/failButton_text"
                 />
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/settingButton_text"
-                    android:layout_marginLeft="@dimen/settingButton_hPadding"
-                    android:id="@+id/setting_button"
-                    android:background="@color/settingButton_background"
-                    android:textColor="@color/settingButton_text"
-                    android:text="@string/test_setting"
-
-                    />
-            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -535,10 +516,25 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/settingButton_text"
-                        android:id="@+id/setting_button2"
+                        android:id="@+id/setting_button"
                         android:background="@color/settingButton_background"
                         android:textColor="@color/settingButton_text"
                         android:text="@string/test_setting"
+                        android:paddingLeft="@dimen/settingButton_hPadding"
+                        android:paddingRight="@dimen/settingButton_hPadding"
+                        android:paddingTop="@dimen/settingButton_vPadding"
+                        android:paddingBottom="@dimen/settingButton_vPadding"
+                        android:layout_marginRight="@dimen/margin_smallSep"
+                        />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/settingButton_text"
+                        android:id="@+id/history_button"
+                        android:background="@color/historyButton_background"
+                        android:textColor="@color/settingButton_text"
+                        android:text="Result History"
                         android:paddingLeft="@dimen/settingButton_hPadding"
                         android:paddingRight="@dimen/settingButton_hPadding"
                         android:paddingTop="@dimen/settingButton_vPadding"

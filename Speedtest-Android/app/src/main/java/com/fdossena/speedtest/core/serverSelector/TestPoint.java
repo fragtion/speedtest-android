@@ -45,7 +45,11 @@ public class TestPoint {
     }
 
     public String getServerIp() {
-        return server.substring(server.indexOf(":") + 3);
+        if (server.indexOf(":") > 0) {
+            return server.substring(server.indexOf(":") + 3);
+        } else {
+            return "";
+        }
     }
 
     public String getDlURL() {
