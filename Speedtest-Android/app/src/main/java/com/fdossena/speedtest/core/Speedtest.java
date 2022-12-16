@@ -165,6 +165,10 @@ public class Speedtest {
         }
     }
 
+    public TestPoint getSelectedServer() {
+        return selectedServer;
+    }
+
     private SpeedtestWorker st=null;
     public void start(final SpeedtestHandler callback){
         synchronized (mutex) {

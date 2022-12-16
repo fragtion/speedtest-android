@@ -4,7 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TestPoint {
-    private final String name, server, dlURL, ulURL, pingURL, getIpURL;
+    private String server;
+    private final String name, dlURL, ulURL, pingURL, getIpURL;
     protected float ping=-1;
 
     public TestPoint(String name, String server, String dlURL, String ulURL, String pingURL, String getIpURL){
@@ -43,6 +44,10 @@ public class TestPoint {
         return server;
     }
 
+    public String getServerIp() {
+        return server.substring(server.indexOf(":") + 3);
+    }
+
     public String getDlURL() {
         return dlURL;
     }
@@ -62,4 +67,12 @@ public class TestPoint {
     public float getPing() {
         return ping;
     }
+    public void setPing(float ping) {
+        this.ping = ping;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
 }

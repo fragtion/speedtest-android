@@ -1,18 +1,24 @@
 package com.fdossena.speedtest.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -32,18 +38,23 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import your.name.here.speedtest.R;
+import favosoft.speedtest.R;
 
 public class MainActivity extends Activity {
+
+    private SharedPreferences prefs;
+    private static String SERVER_PREF_KEY = "server";
+    private static String SERVER_ADDR = "http://192.168.1.4:8866";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        transition(R.id.page_splash,0);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //transition(R.id.page_splash,0);
         new Thread(){
             public void run(){
-                try{sleep(1500);}catch (Throwable t){}
+                //try{sleep(1500);}catch (Throwable t){}
                 try {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     final ImageView v = (ImageView) findViewById(R.id.testBackground);
@@ -78,19 +89,6 @@ public class MainActivity extends Activity {
         new Thread(){
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        transition(R.id.page_init,TRANSITION_LENGTH);
-                    }
-                });
-                final TextView t=((TextView)findViewById(R.id.init_text));
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        t.setText(R.string.init_init);
-                    }
-                });
                 SpeedtestConfig config=null;
                 TelemetryConfig telemetryConfig=null;
                 TestPoint[] servers=null;
@@ -167,37 +165,54 @@ public class MainActivity extends Activity {
                     });
                     return;
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        t.setText(R.string.init_selecting);
-                    }
-                });
-                st.selectServer(new Speedtest.ServerSelectedHandler() {
-                    @Override
-                    public void onServerSelected(final TestPoint server) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(server==null){
-                                    transition(R.id.page_fail,TRANSITION_LENGTH);
-                                    ((TextView)findViewById(R.id.fail_text)).setText(getString(R.string.initFail_noServers));
-                                    final Button b=(Button)findViewById(R.id.fail_button);
-                                    b.setText(R.string.initFail_retry);
-                                    b.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            page_init();
-                                            b.setOnClickListener(null);
-                                        }
-                                    });
-                                }else{
-                                    page_serverSelect(server,st.getTestPoints());
+
+                if (servers.length == 1) {
+                    servers[0].setPing(0);
+                    SERVER_ADDR = prefs.getString(SERVER_PREF_KEY, SERVER_ADDR);
+                    servers[0].setServer(SERVER_ADDR);
+                    st.setSelectedServer(servers[0]);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            page_test(st.getSelectedServer());
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            transition(R.id.page_init,TRANSITION_LENGTH);
+                            final TextView t=((TextView)findViewById(R.id.init_text));
+                            t.setText(R.string.init_init);
+                            t.setText(R.string.init_selecting);
+                        }
+                    });
+                    st.selectServer(new Speedtest.ServerSelectedHandler() {
+                        @Override
+                        public void onServerSelected(final TestPoint server) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (server == null) {
+                                        transition(R.id.page_fail, TRANSITION_LENGTH);
+                                        ((TextView) findViewById(R.id.fail_text)).setText(getString(R.string.initFail_noServers));
+                                        final Button b = (Button) findViewById(R.id.fail_button);
+                                        b.setText(R.string.initFail_retry);
+                                        b.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                page_init();
+                                                b.setOnClickListener(null);
+                                            }
+                                        });
+                                    } else {
+                                        page_serverSelect(server, st.getTestPoints());
+                                    }
                                 }
-                            }
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
+                }
             }
         }.start();
     }
@@ -254,7 +269,7 @@ public class MainActivity extends Activity {
     private void page_test(final TestPoint selected){
         transition(R.id.page_test,TRANSITION_LENGTH);
         st.setSelectedServer(selected);
-        ((TextView)findViewById(R.id.serverName)).setText(selected.getName());
+        ((TextView)findViewById(R.id.serverName)).setText("Test Server:" + "\n" + selected.getServerIp());
         ((TextView)findViewById(R.id.dlText)).setText(format(0));
         ((TextView)findViewById(R.id.ulText)).setText(format(0));
         ((TextView)findViewById(R.id.pingText)).setText(format(0));
@@ -279,7 +294,14 @@ public class MainActivity extends Activity {
         ViewGroup.LayoutParams p=endTestArea.getLayoutParams();
         p.height=0;
         endTestArea.setLayoutParams(p);
-        findViewById(R.id.shareButton).setVisibility(View.GONE);
+        //findViewById(R.id.setting_button).setVisibility(View.GONE);
+        final Button setting_button=(Button)findViewById(R.id.setting_button2);
+        setting_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTestServer();
+            }
+        });
         st.start(new Speedtest.SpeedtestHandler() {
             @Override
             public void onDownloadUpdate(final double dl, final double progress) {
@@ -313,6 +335,8 @@ public class MainActivity extends Activity {
                     public void run() {
                         ((TextView)findViewById(R.id.pingText)).setText(progress==0?"...": format(ping));
                         ((TextView)findViewById(R.id.jitterText)).setText(progress==0?"...": format(jitter));
+                        ((TextView)findViewById(R.id.pingMs)).setVisibility(View.VISIBLE);
+                        ((TextView)findViewById(R.id.jitterMs)).setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -333,16 +357,12 @@ public class MainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Button shareButton=(Button)findViewById(R.id.shareButton);
-                        shareButton.setVisibility(View.VISIBLE);
-                        shareButton.setOnClickListener(new View.OnClickListener() {
+                        final Button setting_button=(Button)findViewById(R.id.setting_button2);
+                        //setting_button.setVisibility(View.VISIBLE);
+                        setting_button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent share = new Intent(android.content.Intent.ACTION_SEND);
-                                share.setType("text/plain");
-                                share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-                                share.putExtra(Intent.EXTRA_TEXT, shareURL);
-                                startActivity(Intent.createChooser(share, getString(R.string.test_share)));
+                                setTestServer();
                             }
                         });
                     }
@@ -388,17 +408,13 @@ public class MainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        transition(R.id.page_fail,TRANSITION_LENGTH);
-                        ((TextView)findViewById(R.id.fail_text)).setText(getString(R.string.testFail_err));
-                        final Button b=(Button)findViewById(R.id.fail_button);
-                        b.setText(R.string.testFail_retry);
-                        b.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                page_init();
-                                b.setOnClickListener(null);
-                            }
-                        });
+                        ((TextView)findViewById(R.id.pingText)).setText("Error");
+                        ((TextView)findViewById(R.id.jitterText)).setText("Error");
+                        ((TextView)findViewById(R.id.pingMs)).setVisibility(View.GONE);
+                        ((TextView)findViewById(R.id.jitterMs)).setVisibility(View.GONE);
+                        ViewGroup.LayoutParams p=endTestArea.getLayoutParams();
+                        p.height=150;
+                        endTestArea.setLayoutParams(p);
                     }
                 });
             }
@@ -525,4 +541,34 @@ public class MainActivity extends Activity {
         }.start();
     }
 
+    private void setTestServer() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Speed Test Server:");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        if (SERVER_ADDR.isEmpty()) {
+            input.setText("http://");
+        } else {
+            input.setText(SERVER_ADDR);
+        }
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SERVER_ADDR = input.getText().toString();
+                prefs.edit().putString(SERVER_PREF_KEY, SERVER_ADDR);
+                page_init();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
 }

@@ -79,27 +79,41 @@
                 android:text="ERROR DESCRIPTION"
                 android:id="@+id/fail_text"
                 android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/margin_sep"
                 android:textColor="@color/textColor"
-                android:textSize="@dimen/text"
+                android:textSize="@dimen/speedMeasure"
+                android:visibility="gone"
                 />
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/testFailArea"
+                android:layout_below="@id/ipInfo"
+                android:layout_marginTop="@dimen/margin_sep"
+                android:gravity="center">
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_sep"
                 android:text="ACTION"
-                android:layout_centerHorizontal="true"
+                android:layout_marginRight="@dimen/settingButton_hPadding"
                 android:layout_below="@id/fail_text"
                 android:id="@+id/fail_button"
                 android:background="@color/failButton_background"
                 android:textColor="@color/failButton_text"
                 android:textSize="@dimen/failButton_text"
-                android:paddingLeft="@dimen/failButton_hPadding"
-                android:paddingRight="@dimen/failButton_hPadding"
-                android:paddingTop="@dimen/failButton_vPadding"
-                android:paddingBottom="@dimen/failButton_vPadding"
                 />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/settingButton_text"
+                    android:layout_marginLeft="@dimen/settingButton_hPadding"
+                    android:id="@+id/setting_button"
+                    android:background="@color/settingButton_background"
+                    android:textColor="@color/settingButton_text"
+                    android:text="@string/test_setting"
 
+                    />
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -271,6 +285,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/test_timeMeasure"
+                                android:id="@+id/pingMs"
                                 android:layout_toRightOf="@id/pingText"
                                 android:layout_alignBaseline="@id/pingText"
                                 android:textSize="@dimen/timeMeasure"
@@ -319,6 +334,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/test_timeMeasure"
+                                android:id="@+id/jitterMs"
                                 android:layout_toRightOf="@id/jitterText"
                                 android:layout_alignBaseline="@id/jitterText"
                                 android:textSize="@dimen/timeMeasure"
@@ -518,15 +534,15 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/shareButton_text"
-                        android:id="@+id/shareButton"
-                        android:background="@color/shareButton_background"
-                        android:textColor="@color/shareButton_text"
-                        android:text="@string/test_share"
-                        android:paddingLeft="@dimen/shareButton_hPadding"
-                        android:paddingRight="@dimen/shareButton_hPadding"
-                        android:paddingTop="@dimen/shareButton_vPadding"
-                        android:paddingBottom="@dimen/shareButton_vPadding"
+                        android:textSize="@dimen/settingButton_text"
+                        android:id="@+id/setting_button2"
+                        android:background="@color/settingButton_background"
+                        android:textColor="@color/settingButton_text"
+                        android:text="@string/test_setting"
+                        android:paddingLeft="@dimen/settingButton_hPadding"
+                        android:paddingRight="@dimen/settingButton_hPadding"
+                        android:paddingTop="@dimen/settingButton_vPadding"
+                        android:paddingBottom="@dimen/settingButton_vPadding"
                         />
                 </LinearLayout>
             </RelativeLayout>

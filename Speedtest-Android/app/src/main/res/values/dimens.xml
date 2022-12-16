@@ -3,7 +3,7 @@
     <dimen name="text">16dp</dimen>
     <dimen name="speedMeasure">20dp</dimen>
     <dimen name="timeMeasure">18dp</dimen>
-    <dimen name="serverText">14dp</dimen>
+    <dimen name="serverText">20dp</dimen>
     <dimen name="pingJitterLabel">18dp</dimen>
     <dimen name="pingJitterText">32dp</dimen>
     <dimen name="gaugeLabel">18dp</dimen>
@@ -27,9 +27,9 @@
     <dimen name="startButton_text">16dp</dimen>
     <dimen name="startButton_hPadding">6dp</dimen>
     <dimen name="startButton_vPadding">6dp</dimen>
-    <dimen name="shareButton_text">16dp</dimen>
-    <dimen name="shareButton_hPadding">6dp</dimen>
-    <dimen name="shareButton_vPadding">6dp</dimen>
+    <dimen name="settingButton_text">16dp</dimen>
+    <dimen name="settingButton_hPadding">6dp</dimen>
+    <dimen name="settingButton_vPadding">6dp</dimen>
     <dimen name="restartButton_text">16dp</dimen>
     <dimen name="restartButton_hPadding">6dp</dimen>
     <dimen name="restartButton_vPadding">6dp</dimen>
