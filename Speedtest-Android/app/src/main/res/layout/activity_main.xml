@@ -7,95 +7,9 @@
     tools:context="com.fdossena.speedtest.ui.MainActivity"
     android:background="@color/appBackground">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:id="@+id/testBackground"
-        />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:id="@+id/page_splash"
-            android:visibility="invisible"
-            android:background="@color/splashBackground"
-            >
-
-            <ImageView
-                android:layout_width="@dimen/logo_maxWidth"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_medium"
-                android:src="@drawable/logo" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:id="@+id/page_init"
-            android:visibility="invisible"
-            >
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/loading_size"
-                android:id="@+id/init_progress"
-                android:layout_centerHorizontal="true"
-                android:indeterminate="true"
-                android:indeterminateTint="@color/loadingColor"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TEXT GOES HERE"
-                android:layout_toRightOf="@id/init_progress"
-                android:layout_toEndOf="@id/init_progress"
-                android:id="@+id/init_text"
-                android:layout_centerHorizontal="true"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/text"
-                />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:id="@+id/page_fail"
-            android:visibility="invisible"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ERROR DESCRIPTION"
-                android:id="@+id/fail_text"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/margin_sep"
-                android:textColor="@color/textColor"
-                android:textSize="@dimen/speedMeasure"
-                android:visibility="gone"
-                />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ACTION"
-                android:layout_marginRight="@dimen/settingButton_hPadding"
-                android:layout_below="@id/fail_text"
-                android:id="@+id/fail_button"
-                android:background="@color/failButton_background"
-                android:textColor="@color/failButton_text"
-                android:textSize="@dimen/failButton_text"
-                />
-        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -534,7 +448,7 @@
                         android:id="@+id/history_button"
                         android:background="@color/historyButton_background"
                         android:textColor="@color/settingButton_text"
-                        android:text="Result History"
+                        android:text="Test Result"
                         android:paddingLeft="@dimen/settingButton_hPadding"
                         android:paddingRight="@dimen/settingButton_hPadding"
                         android:paddingTop="@dimen/settingButton_vPadding"
@@ -545,4 +459,35 @@
         </ScrollView>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/resultHistoryArea"
+        android:visibility="invisible"
+        android:background="@color/result_history_background"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars = "vertical"
+            android:typeface="monospace"
+            android:background="@color/result_history_background"
+            android:id="@+id/result_history"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/result_history"
+            android:layout_centerHorizontal="true"
+            android:textSize="@dimen/settingButton_text"
+            android:id="@+id/history_close_button"
+            android:background="@color/historyButton_background"
+            android:textColor="@color/settingButton_text"
+            android:text="Close"
+            android:paddingTop="@dimen/settingButton_vPadding"
+            android:paddingBottom="@dimen/settingButton_vPadding"
+            />
+    </RelativeLayout>
 </FrameLayout>

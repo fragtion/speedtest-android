@@ -24,4 +24,5 @@
     <color name="restartButton_text">#FFFFFF</color>
     <color name="privacyLinks">#808080</color>
     <color name="historyButton_background">#3F51B5</color>
+    <color name="result_history_background">#5D5D61</color>
 </resources>
