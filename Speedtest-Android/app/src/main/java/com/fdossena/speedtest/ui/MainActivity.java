@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
     private static String SERVER_PREF_KEY = "server";
     private static String HIRTORY_PREF_KEY = "history";
 
-    private static String SERVER_ADDR = "http://192.168.1.4:8866";
+    private static String SERVER_ADDR = "http://speedtest.ezspot.co.za/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
