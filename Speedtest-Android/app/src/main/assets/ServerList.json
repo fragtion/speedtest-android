@@ -1,7 +1,7 @@
 [
   {
-    "name":"NAS",
-    "server":"http://192.168.1.4:88666",
+    "name":"ezspot pappasjhb1",
+    "server":"http://speedtest.ezspot.co.za/",
     "dlURL":"/backend/garbage.php",
     "ulURL":"/backend/empty.php",
     "pingURL":"/backend/empty.php",
